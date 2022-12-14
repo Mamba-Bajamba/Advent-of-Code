@@ -8,11 +8,8 @@ class Shape:
 
     SHAPE_SYMB_MAP: dict[str: int] = {
         'A': ROCK,
-        'X': ROCK,
         'B': PAPER,
-        'Y': PAPER,
-        'C': SCISSORS,
-        'Z': SCISSORS
+        'C': SCISSORS
     }
 
     SHAPE_POINTS_MAP: dict[int: int] = {
@@ -56,15 +53,33 @@ class GameRound:
     POINTS_DRAW = 3
     POINTS_LOSS = 0
 
-    def __init__(self, opponent_shape_symb: str, player_shape_symb: str):
+    ROUND_STRATEGY_MAP: dict[dict[int: int]] = {
+        'X': {
+            Shape.ROCK: Shape.SCISSORS,
+            Shape.PAPER: Shape.ROCK,
+            Shape.SCISSORS: Shape.PAPER
+        },
+        'Y': {
+            Shape.ROCK: Shape.ROCK,
+            Shape.PAPER: Shape.PAPER,
+            Shape.SCISSORS: Shape.SCISSORS
+        },
+        'Z': {
+            Shape.ROCK: Shape.PAPER,
+            Shape.PAPER: Shape.SCISSORS,
+            Shape.SCISSORS: Shape.ROCK
+        }
+    }
+
+    def __init__(self, opponent_shape_symb: str, player_strategy_symb: str):
         """
         Accepts strings representing play shapes and response shapes and stores them as Shape enums
         :param opponent_shape_symb: The shape played by the opponent
-        :param player_shape_symb: The shape played in response by the player
+        :param player_strategy_symb: The shape played in response by the player
         """
         try:
             self.opponent_shape = Shape.str_to_shape(opponent_shape_symb)
-            self.player_shape = Shape.str_to_shape(player_shape_symb)
+            self.player_shape = GameRound.ROUND_STRATEGY_MAP[player_strategy_symb][self.opponent_shape]
         except KeyError:
             raise ValueError("A symbol provided did not match any shape")
 
@@ -107,7 +122,7 @@ class Game:
         if len(shape_symbols) != 2:
             raise ValueError("Shape line does not contain a space")
 
-        game_round = GameRound(opponent_shape_symb=shape_symbols[0], player_shape_symb=shape_symbols[1])
+        game_round = GameRound(opponent_shape_symb=shape_symbols[0], player_strategy_symb=shape_symbols[1])
         self.game_rounds.append(game_round)
 
     def calculate_total_points(self) -> int:
