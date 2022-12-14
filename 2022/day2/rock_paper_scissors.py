@@ -1,4 +1,4 @@
-IPT_FN = "./day2.input"
+IPT_FN = './day2.input'
 
 
 class Shape:
